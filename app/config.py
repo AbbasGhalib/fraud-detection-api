@@ -58,3 +58,6 @@ settings = Settings()
 if not settings.GEMINI_API_KEY:
     print("WARNING: GEMINI_API_KEY not set. Document comparison features will not work.")
 
+
+
+
