@@ -56,3 +56,6 @@ class ErrorResponse(BaseModel):
     detail: str
     type: Optional[str] = None
 
+
+
+
