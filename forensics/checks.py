@@ -9,20 +9,19 @@ import re
 import io
 
 # Check if pytesseract is available
+TESSERACT_AVAILABLE = False
 try:
     import pytesseract
-    import sys
-    
-    # Set Tesseract path for Windows if needed
-    if sys.platform == 'win32':
-        import os
-        tesseract_path = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-        if os.path.exists(tesseract_path):
-            pytesseract.pytesseract.tesseract_cmd = tesseract_path
-    
-    pytesseract.get_tesseract_version()
-    TESSERACT_AVAILABLE = True
-except:
+    # Only check version if tesseract binary is actually available
+    try:
+        pytesseract.get_tesseract_version()
+        TESSERACT_AVAILABLE = True
+        print("[INFO] Tesseract OCR is available")
+    except Exception as e:
+        print(f"[WARNING] Tesseract binary not found: {e}")
+        TESSERACT_AVAILABLE = False
+except ImportError:
+    print("[WARNING] pytesseract package not available")
     TESSERACT_AVAILABLE = False
 
 def check_text_alignment(pdf_path):

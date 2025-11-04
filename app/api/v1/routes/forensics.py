@@ -7,12 +7,18 @@ import tempfile
 import os
 
 # Import existing forensics module
+analyze_document_forensics = None
 try:
     from forensics import analyze_document_forensics
     from forensics.forensic_analyzer import preprocess_uploaded_file
+    print("[SUCCESS] Forensics module imported successfully")
 except ImportError as e:
-    print(f"[WARNING] Could not import forensics module: {e}")
-    print(f"   Make sure forensics/ folder exists in project root")
+    print(f"[ERROR] Could not import forensics module: {e}")
+    print(f"[ERROR] Traceback:", exc_info=True)
+except Exception as e:
+    print(f"[ERROR] Exception during forensics import: {e}")
+    import traceback
+    traceback.print_exc()
 
 router = APIRouter()
 
@@ -45,6 +51,13 @@ async def analyze_document(
     """
     Perform comprehensive forensic analysis on uploaded document
     """
+    
+    # Check if forensics module is available
+    if analyze_document_forensics is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Forensics analysis module is not available. Please check server logs."
+        )
     
     start_time = time.time()
     
