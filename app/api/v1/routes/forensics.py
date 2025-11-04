@@ -5,6 +5,7 @@ from app.config import settings
 import time
 import tempfile
 import os
+import traceback
 
 # Import existing forensics module
 analyze_document_forensics = None
@@ -14,13 +15,13 @@ try:
     print("[SUCCESS] Forensics module imported successfully")
 except ImportError as e:
     print(f"[ERROR] Could not import forensics module: {e}")
-    print(f"[ERROR] Traceback:", exc_info=True)
+    traceback.print_exc()  # Fixed: proper way to print traceback
 except Exception as e:
     print(f"[ERROR] Exception during forensics import: {e}")
-    import traceback
     traceback.print_exc()
 
 router = APIRouter()
+
 
 @router.post(
     "/forensics/analyze",
