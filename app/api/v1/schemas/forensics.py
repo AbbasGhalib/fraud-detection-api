@@ -13,24 +13,43 @@ class CheckResult(BaseModel):
     error: Optional[str] = Field(default=None, description="Error message if check failed")
 
 class ForensicAnalysisResponse(BaseModel):
-    """Complete forensic analysis results"""
-    overall_score: float = Field(ge=0, le=100, description="Overall risk score")
-    risk_level: str = Field(description="Risk level: LOW, MEDIUM, or HIGH")
+    """Response model for forensic analysis"""
+    file_name: str
+    doc_type: str
+    processing_time: float
     
-    # Individual check results
-    alignment: CheckResult = Field(description="Text alignment analysis")
-    fonts: CheckResult = Field(description="Font consistency analysis")
-    metadata: CheckResult = Field(description="PDF metadata analysis")
-    numbers: CheckResult = Field(description="Number pattern analysis")
-    image: CheckResult = Field(description="Image quality analysis")
-    page_numbers: Optional[CheckResult] = Field(default=None, description="Page numbering check (NOA only)")
-    noa_id_check: Optional[CheckResult] = Field(default=None, description="ID duplicate detection (NOA only)")
+    # Forensic check results
+    alignment: Dict[str, Any]
+    fonts: Dict[str, Any]
+    metadata: Dict[str, Any]
+    numbers: Dict[str, Any]
+    image: Dict[str, Any]
+    page_numbers: Optional[Dict[str, Any]] = None
+    noa_id_check: Optional[Dict[str, Any]] = None
     
-    # Metadata
-    processing_time: float = Field(description="Analysis time in seconds")
-    timestamp: datetime = Field(default_factory=datetime.now, description="Analysis timestamp")
-    file_name: str = Field(description="Original file name")
-    doc_type: str = Field(description="Document type analyzed")
+    # NEW: Visual forensics
+    visualizations: Optional[List[Dict[str, str]]] = Field(
+        default=None,
+        description="Base64-encoded visualization images showing forensic issues"
+    )
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "file_name": "document.pdf",
+                "doc_type": "noa",
+                "processing_time": 2.45,
+                "alignment": {"risk_score": 30, "applicable": True},
+                "fonts": {"risk_score": 45, "applicable": True},
+                "visualizations": [
+                    {
+                        "page": 1,
+                        "image_base64": "iVBORw0KGgoAAAANS...",
+                        "format": "png"
+                    }
+                ]
+            }
+        }
 
 class ForensicRecordResponse(BaseModel):
     """Forensic database record"""

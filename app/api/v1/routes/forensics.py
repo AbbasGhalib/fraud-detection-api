@@ -1,3 +1,4 @@
+from forensics.visualizer_api import create_forensic_visualizations_api
 from fastapi import APIRouter, UploadFile, File, HTTPException, Query
 from fastapi.responses import JSONResponse
 from app.api.v1.schemas.forensics import ForensicAnalysisResponse, ErrorResponse
@@ -93,7 +94,19 @@ async def analyze_document(
             file_name=file.filename,
             doc_type=doc_type.lower()
         )
-        
+    
+        # Generate visual forensics
+        try:
+            visualizations = create_forensic_visualizations_api(
+                pdf_file=tmp_path,
+                pdf_bytes=file_content,
+                forensic_results=results,
+                max_pages=2  # Limit to first 2 pages for performance
+            )
+        except Exception as viz_error:
+            print(f"[WARNING] Could not generate visualizations: {viz_error}")
+            visualizations = None
+    
         # Calculate processing time
         processing_time = time.time() - start_time
         
@@ -102,7 +115,8 @@ async def analyze_document(
             **results,
             "processing_time": processing_time,
             "file_name": file.filename,
-            "doc_type": doc_type
+            "doc_type": doc_type,
+            "visualizations": visualizations  # Add visualizations
         }
         
         # Handle missing keys gracefully
