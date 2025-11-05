@@ -129,7 +129,7 @@ def create_forensic_visualizations_api(pdf_file, pdf_bytes, forensic_results, ma
             plt.close(fig)
             
             visualizations.append({
-                "page": page_num + 1,
+                "page": str(page_num + 1),
                 "image_base64": img_base64,
                 "format": "png"
             })
